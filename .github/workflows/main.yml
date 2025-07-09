@@ -1,263 +1,80 @@
-name: CI/CD Pipeline
+name: Automation CI/CD Pipeline
 
-# Trigger pipeline pada push dan pull request
+# Trigger / Kapan Action-nya jalan
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
-# Environment variables
-env:
-  NODE_VERSION: '18'
-  DOCKER_BUILDKIT: 1
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  # Job untuk testing API
-  test-api:
+  automation-api-web:
     runs-on: ubuntu-latest
-    defaults:
-      run:
+
+    steps:
+      - uses: actions/checkout@v4  # Checkout the repository
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # Test API
+      - name: Install API dependencies
         working-directory: ./api
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: api/package.json
-    
-    - name: Install dependencies
-      run: |
-        npm install || {
-          echo "npm install failed, removing package-lock.json and retrying..."
-          rm -f package-lock.json
-          npm install
-        }
-    
-    - name: Run linting (optional)
-      run: npm run lint || echo "No lint script found"
-    
-    - name: Run tests
-      run: npm test -- --coverage --watchAll=false
-    
-    - name: Upload API test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: api-test-results
-        path: |
-          api/coverage/
-          api/junit.xml
-        retention-days: 30
-    
-    - name: Upload API coverage to Codecov (optional)
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./api/coverage/lcov.info
-        flags: api
-        name: api-coverage
+        run: npm install
 
-  # Job untuk testing Web UI
-  test-web-ui:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
+      - name: Run API Tests
+        working-directory: ./api
+        run: npm test
+
+      # Test Web UI
+      - name: Install Web UI dependencies
         working-directory: ./web-ui
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: web-ui/package.json
-    
-    - name: Install dependencies
-      run: |
-        npm install || {
-          echo "npm install failed, removing package-lock.json and retrying..."
-          rm -f package-lock.json
-          npm install
-        }
-    
-    - name: Run tests
-      run: npm run test:ci
-    
-    - name: Build production
-      run: npm run build
-    
-    - name: Upload Web UI test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: web-ui-test-results
-        path: |
-          web-ui/coverage/
-          web-ui/junit.xml
-          web-ui/build/
-        retention-days: 30
-    
-    - name: Upload Web UI coverage to Codecov (optional)
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./web-ui/coverage/lcov.info
-        flags: web-ui
-        name: web-ui-coverage
+        run: npm install
 
-  # Job untuk Docker build dan testing
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: [test-api, test-web-ui]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Build API Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./api
-        file: ./api/Dockerfile
-        push: false
-        tags: automation-api:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-    
-    - name: Build Web UI Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./web-ui
-        file: ./web-ui/Dockerfile
-        push: false
-        tags: automation-web-ui:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-    
-    - name: Test Docker Compose
-      run: |
-        docker-compose up -d
-        sleep 30
-        
-        # Test API health
-        curl -f http://localhost:3000/api/health || exit 1
-        
-        # Test Web UI
-        curl -f http://localhost:3001 || exit 1
-        
-        docker-compose down
-    
-    - name: Upload Docker logs
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: docker-logs
-        path: |
-          docker-compose.yml
-        retention-days: 7
+      - name: Run Web UI Tests
+        working-directory: ./web-ui
+        run: npm test -- --watchAll=false
 
-  # Job untuk deployment (hanya pada main branch)
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [docker-build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Deploy to staging
-      run: |
-        echo "Deploying to staging environment..."
-        # Tambahkan script deployment di sini
-        # Contoh: deploy ke server staging atau cloud platform
-    
-    - name: Create deployment artifact
-      run: |
-        mkdir -p deployment
-        cp docker-compose.yml deployment/
-        cp -r api deployment/
-        cp -r web-ui deployment/
-        tar -czf deployment-${{ github.sha }}.tar.gz deployment/
-    
-    - name: Upload deployment artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: deployment-package
-        path: deployment-${{ github.sha }}.tar.gz
-        retention-days: 90
+      - name: Build Web UI
+        working-directory: ./web-ui
+        run: npm run build
 
-  # Job untuk generate dan upload reports
-  generate-reports:
-    runs-on: ubuntu-latest
-    needs: [test-api, test-web-ui, docker-build]
-    if: always()
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-    
-    - name: Generate combined report
-      run: |
-        mkdir -p reports
-        
-        echo "# CI/CD Pipeline Report" > reports/README.md
-        echo "Generated on: $(date)" >> reports/README.md
-        echo "Commit: ${{ github.sha }}" >> reports/README.md
-        echo "Branch: ${{ github.ref }}" >> reports/README.md
-        echo "" >> reports/README.md
-        
-        echo "## Test Results" >> reports/README.md
-        echo "- API Tests: $([ -d api-test-results ] && echo "✅ Passed" || echo "❌ Failed")" >> reports/README.md
-        echo "- Web UI Tests: $([ -d web-ui-test-results ] && echo "✅ Passed" || echo "❌ Failed")" >> reports/README.md
-        echo "- Docker Build: $([ -d docker-logs ] && echo "❌ Failed" || echo "✅ Passed")" >> reports/README.md
-        echo "" >> reports/README.md
-        
-        echo "## Artifacts Generated" >> reports/README.md
-        echo "- Test coverage reports" >> reports/README.md
-        echo "- Docker build logs" >> reports/README.md
-        echo "- Deployment package" >> reports/README.md
-        
-        # Copy all artifacts to reports folder
-        cp -r */ reports/ 2>/dev/null || true
-    
-    - name: Upload consolidated report
-      uses: actions/upload-artifact@v4
-      with:
-        name: pipeline-report
-        path: reports/
-        retention-days: 90
+      # Archive test results (API)
+      - name: Archive API test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-test-results
+          path: api/coverage/
 
-  # Job untuk notifikasi
-  notify:
-    runs-on: ubuntu-latest
-    needs: [generate-reports]
-    if: always()
-    
-    steps:
-    - name: Notify success
-      if: needs.generate-reports.result == 'success'
-      run: |
-        echo "✅ Pipeline completed successfully!"
-        echo "All tests and builds: SUCCESS"
-        # Tambahkan notifikasi ke Slack, Teams, atau email di sini
-    
-    - name: Notify failure
-      if: failure()
-      run: |
-        echo "❌ Pipeline failed!"
-        echo "Check the logs and artifacts for details."
-        # Tambahkan notifikasi ke Slack, Teams, atau email di sini
+      # Archive test results (Web UI)
+      - name: Archive Web UI test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-ui-test-results
+          path: web-ui/coverage/
+
+      # Archive build artifacts
+      - name: Archive Web UI build
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-ui-build
+          path: web-ui/build/
+
+      # Deploy to GitHub Pages (optional)
+      - name: Deploy Web UI to GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: web-ui/build
