@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   automation-api-web:
@@ -69,11 +67,3 @@ jobs:
         with:
           name: web-ui-build
           path: web-ui/build/
-
-      # Deploy to GitHub Pages (optional)
-      - name: Deploy Web UI to GitHub Pages
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: web-ui/build
