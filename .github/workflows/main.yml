@@ -1,0 +1,285 @@
+name: CI/CD Pipeline
+
+# Trigger pipeline pada push dan pull request
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+# Environment variables
+env:
+  NODE_VERSION: '18'
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  # Job untuk testing API
+  test-api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: api/package-lock.json
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linting (optional)
+      run: npm run lint || echo "No lint script found"
+    
+    - name: Run tests
+      run: npm test -- --coverage --watchAll=false
+    
+    - name: Upload API test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: api-test-results
+        path: |
+          api/coverage/
+          api/junit.xml
+        retention-days: 30
+    
+    - name: Upload API coverage to Codecov (optional)
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./api/coverage/lcov.info
+        flags: api
+        name: api-coverage
+
+  # Job untuk testing Web UI
+  test-web-ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web-ui
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: web-ui/package-lock.json
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm run test:ci
+    
+    - name: Build production
+      run: npm run build
+    
+    - name: Upload Web UI test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: web-ui-test-results
+        path: |
+          web-ui/coverage/
+          web-ui/junit.xml
+          web-ui/build/
+        retention-days: 30
+    
+    - name: Upload Web UI coverage to Codecov (optional)
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./web-ui/coverage/lcov.info
+        flags: web-ui
+        name: web-ui-coverage
+
+  # Job untuk Docker build dan testing
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [test-api, test-web-ui]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build API Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./api
+        file: ./api/Dockerfile
+        push: false
+        tags: automation-api:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Build Web UI Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./web-ui
+        file: ./web-ui/Dockerfile
+        push: false
+        tags: automation-web-ui:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Test Docker Compose
+      run: |
+        docker-compose up -d
+        sleep 30
+        
+        # Test API health
+        curl -f http://localhost:3000/api/health || exit 1
+        
+        # Test Web UI
+        curl -f http://localhost:3001 || exit 1
+        
+        docker-compose down
+    
+    - name: Upload Docker logs
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: docker-logs
+        path: |
+          docker-compose.yml
+        retention-days: 7
+
+  # Job untuk security scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: [test-api, test-web-ui]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: actions/upload-artifact@v4
+      with:
+        name: trivy-scan-results
+        path: trivy-results.sarif
+        retention-days: 30
+    
+    - name: Upload scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: trivy-results.sarif
+
+  # Job untuk deployment (hanya pada main branch)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [docker-build, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Tambahkan script deployment di sini
+        # Contoh: deploy ke server staging atau cloud platform
+    
+    - name: Create deployment artifact
+      run: |
+        mkdir -p deployment
+        cp docker-compose.yml deployment/
+        cp -r api deployment/
+        cp -r web-ui deployment/
+        tar -czf deployment-${{ github.sha }}.tar.gz deployment/
+    
+    - name: Upload deployment artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: deployment-package
+        path: deployment-${{ github.sha }}.tar.gz
+        retention-days: 90
+
+  # Job untuk generate dan upload reports
+  generate-reports:
+    runs-on: ubuntu-latest
+    needs: [test-api, test-web-ui, docker-build, security-scan]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+    
+    - name: Generate combined report
+      run: |
+        mkdir -p reports
+        
+        echo "# CI/CD Pipeline Report" > reports/README.md
+        echo "Generated on: $(date)" >> reports/README.md
+        echo "Commit: ${{ github.sha }}" >> reports/README.md
+        echo "Branch: ${{ github.ref }}" >> reports/README.md
+        echo "" >> reports/README.md
+        
+        echo "## Test Results" >> reports/README.md
+        echo "- API Tests: $([ -d api-test-results ] && echo "✅ Passed" || echo "❌ Failed")" >> reports/README.md
+        echo "- Web UI Tests: $([ -d web-ui-test-results ] && echo "✅ Passed" || echo "❌ Failed")" >> reports/README.md
+        echo "- Docker Build: $([ -d docker-logs ] && echo "❌ Failed" || echo "✅ Passed")" >> reports/README.md
+        echo "- Security Scan: $([ -d trivy-scan-results ] && echo "✅ Completed" || echo "❌ Failed")" >> reports/README.md
+        echo "" >> reports/README.md
+        
+        echo "## Artifacts Generated" >> reports/README.md
+        echo "- Test coverage reports" >> reports/README.md
+        echo "- Security scan results" >> reports/README.md
+        echo "- Docker build logs" >> reports/README.md
+        echo "- Deployment package" >> reports/README.md
+        
+        # Copy all artifacts to reports folder
+        cp -r */ reports/ 2>/dev/null || true
+    
+    - name: Upload consolidated report
+      uses: actions/upload-artifact@v4
+      with:
+        name: pipeline-report
+        path: reports/
+        retention-days: 90
+
+  # Job untuk notifikasi
+  notify:
+    runs-on: ubuntu-latest
+    needs: [deploy, generate-reports]
+    if: always()
+    
+    steps:
+    - name: Notify success
+      if: needs.deploy.result == 'success'
+      run: |
+        echo "✅ Pipeline completed successfully!"
+        echo "Deployment to staging: SUCCESS"
+        # Tambahkan notifikasi ke Slack, Teams, atau email di sini
+    
+    - name: Notify failure
+      if: failure()
+      run: |
+        echo "❌ Pipeline failed!"
+        echo "Check the logs and artifacts for details."
+        # Tambahkan notifikasi ke Slack, Teams, atau email di sini

@@ -1,0 +1,30 @@
+{
+  "name": "automation-repo",
+  "version": "1.0.0",
+  "description": "Automation repository with API and Web UI",
+  "scripts": {
+    "start": "docker-compose up",
+    "start:dev": "docker-compose up --build",
+    "stop": "docker-compose down",
+    "test": "npm run test:api && npm run test:web-ui",
+    "test:api": "cd api && npm test",
+    "test:web-ui": "cd web-ui && npm test",
+    "build": "docker-compose build",
+    "clean": "docker-compose down --rmi all --volumes --remove-orphans",
+    "install:all": "cd api && npm install && cd ../web-ui && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/automation-repo.git"
+  },
+  "keywords": [
+    "automation",
+    "api",
+    "web-ui",
+    "docker",
+    "ci-cd",
+    "github-actions"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
