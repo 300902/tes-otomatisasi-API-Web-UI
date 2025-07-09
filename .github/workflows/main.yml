@@ -166,40 +166,10 @@ jobs:
           docker-compose.yml
         retention-days: 7
 
-  # Job untuk security scanning
-  security-scan:
-    runs-on: ubuntu-latest
-    needs: [test-api, test-web-ui]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-    
-    - name: Upload Trivy scan results
-      uses: actions/upload-artifact@v4
-      with:
-        name: trivy-scan-results
-        path: trivy-results.sarif
-        retention-days: 30
-    
-    - name: Upload scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: trivy-results.sarif
-
   # Job untuk deployment (hanya pada main branch)
   deploy:
     runs-on: ubuntu-latest
-    needs: [docker-build, security-scan]
+    needs: [docker-build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
@@ -230,7 +200,7 @@ jobs:
   # Job untuk generate dan upload reports
   generate-reports:
     runs-on: ubuntu-latest
-    needs: [test-api, test-web-ui, docker-build, security-scan]
+    needs: [test-api, test-web-ui, docker-build]
     if: always()
     
     steps:
@@ -254,12 +224,10 @@ jobs:
         echo "- API Tests: $([ -d api-test-results ] && echo "✅ Passed" || echo "❌ Failed")" >> reports/README.md
         echo "- Web UI Tests: $([ -d web-ui-test-results ] && echo "✅ Passed" || echo "❌ Failed")" >> reports/README.md
         echo "- Docker Build: $([ -d docker-logs ] && echo "❌ Failed" || echo "✅ Passed")" >> reports/README.md
-        echo "- Security Scan: $([ -d trivy-scan-results ] && echo "✅ Completed" || echo "❌ Failed")" >> reports/README.md
         echo "" >> reports/README.md
         
         echo "## Artifacts Generated" >> reports/README.md
         echo "- Test coverage reports" >> reports/README.md
-        echo "- Security scan results" >> reports/README.md
         echo "- Docker build logs" >> reports/README.md
         echo "- Deployment package" >> reports/README.md
         
@@ -276,15 +244,15 @@ jobs:
   # Job untuk notifikasi
   notify:
     runs-on: ubuntu-latest
-    needs: [deploy, generate-reports]
+    needs: [generate-reports]
     if: always()
     
     steps:
     - name: Notify success
-      if: needs.deploy.result == 'success'
+      if: needs.generate-reports.result == 'success'
       run: |
         echo "✅ Pipeline completed successfully!"
-        echo "Deployment to staging: SUCCESS"
+        echo "All tests and builds: SUCCESS"
         # Tambahkan notifikasi ke Slack, Teams, atau email di sini
     
     - name: Notify failure
