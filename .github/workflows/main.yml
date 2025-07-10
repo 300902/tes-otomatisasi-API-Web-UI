@@ -79,27 +79,37 @@ jobs:
           2. Try using a different browser
           3. Check if you have permission to access the files
           EOF
+          
+          # Copy README to project directories
+          cp reports/README.md api/
+          cp reports/README.md web-ui/
 
       # Archive test results (API)
       - name: Archive API test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: api-test-results
-          path: api
+          path: |
+            api/coverage
+            api/html-report
+            api/README.md
 
       # Archive test results (Web UI)
       - name: Archive Web UI test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: web-ui-test-results
-          path: web-ui
+          path: |
+            web-ui/coverage
+            web-ui/html-report
+            web-ui/README.md
 
-      # Archive README
-      - name: Archive README
-        uses: actions/upload-artifact@v1
+      # Archive build artifacts
+      - name: Archive Web UI build
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: instructions
-          path: reports/README.md
+          name: web-ui-build
+          path: web-ui/build
