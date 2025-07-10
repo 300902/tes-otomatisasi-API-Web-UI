@@ -38,11 +38,18 @@ jobs:
 
       - name: Run Web UI Tests
         working-directory: ./web-ui
-        run: npm test -- --watchAll=false
+        run: npm run test:ci
 
       - name: Build Web UI
         working-directory: ./web-ui
         run: npm run build
+
+      # Copy README to reports directory
+      - name: Copy README to reports
+        run: |
+          mkdir -p api/html-report
+          mkdir -p web-ui/html-report
+          cp -r reports/* .
 
       # Archive test results (API)
       - name: Archive API test results
@@ -50,7 +57,10 @@ jobs:
         if: always()
         with:
           name: api-test-results
-          path: api/coverage/
+          path: |
+            api/coverage/
+            api/html-report/
+            README.md
 
       # Archive test results (Web UI)
       - name: Archive Web UI test results
@@ -58,7 +68,10 @@ jobs:
         if: always()
         with:
           name: web-ui-test-results
-          path: web-ui/coverage/
+          path: |
+            web-ui/coverage/
+            web-ui/html-report/
+            README.md
 
       # Archive build artifacts
       - name: Archive Web UI build

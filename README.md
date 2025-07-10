@@ -12,6 +12,7 @@ Repository ini berisi:
 ├── web-ui/             # Frontend React
 ├── .github/workflows/  # GitHub Actions workflows
 ├── docker-compose.yml  # Docker configuration
+├── reports/            # Test report instructions
 └── README.md          # Dokumentasi proyek
 ```
 
@@ -30,3 +31,17 @@ Pipeline GitHub Actions akan:
 - Build Docker images
 - Menyimpan test results sebagai artifacts
 - Deploy ke staging environment
+
+## Test Reports
+
+Test reports are generated in HTML format for both API and Web UI components:
+
+1. Download the test result artifacts from the GitHub Actions workflow
+2. Open the HTML report in your browser:
+   - API: `api/html-report/test-report.html`
+   - Web UI: `web-ui/html-report/test-report.html`
+3. Coverage reports are also available:
+   - API: `api/coverage/lcov-report/index.html`
+   - Web UI: `web-ui/coverage/lcov-report/index.html`
+
+For detailed instructions, see the README.md file included in each artifact.
