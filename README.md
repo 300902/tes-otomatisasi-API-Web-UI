@@ -34,14 +34,23 @@ Pipeline GitHub Actions akan:
 
 ## Test Reports
 
-Test reports are generated in HTML format for both API and Web UI components:
+Test reports are generated for both API and Web UI components:
 
-1. Download the test result artifacts from the GitHub Actions workflow
-2. Open the HTML report in your browser:
-   - API: `api/html-report/test-report.html`
-   - Web UI: `web-ui/html-report/test-report.html`
-3. Coverage reports are also available:
-   - API: `api/coverage/lcov-report/index.html`
-   - Web UI: `web-ui/coverage/lcov-report/index.html`
+1. Download the test result artifacts from the GitHub Actions workflow:
+   - Click on the completed workflow run
+   - Scroll down to the "Artifacts" section
+   - Download the "api-test-results" and "web-ui-test-results" zip files
 
-For detailed instructions, see the README.md file included in each artifact.
+2. Extract the zip files to a local folder
+
+3. Open the HTML reports in your browser:
+   - API: Open `api-test-results/html-report/test-report.html`
+   - Web UI: Open `web-ui-test-results/html-report/test-report.html`
+
+4. For detailed code coverage information:
+   - API: Open `api-test-results/coverage/lcov-report/index.html`
+   - Web UI: Open `web-ui-test-results/coverage/lcov-report/index.html`
+
+5. Each artifact includes a README.md file with step-by-step instructions
+
+Note: HTML files can be opened by double-clicking them or right-clicking and selecting "Open with" your preferred browser.

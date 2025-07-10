@@ -61,20 +61,28 @@ jobs:
           3. Open this file with any web browser (Chrome, Firefox, Edge, etc.)
           4. You can simply double-click the file or right-click and select "Open with" and choose your browser
 
-          ### Web UI Test Report
+          ### Web UI Test Report and Coverage
           1. Navigate to the `web-ui-test-results` directory 
-          2. For coverage reports, open `coverage/lcov-report/index.html` in your browser
-          3. This will show you detailed code coverage information for the project
+          2. Open the `html-report/test-report.html` file in your browser for a summary
+          3. For detailed coverage reports, open `coverage/lcov-report/index.html` in your browser
+          4. The coverage report shows which parts of the code are covered by tests (green) and which are not (red)
 
           ## Notes
           - These reports provide a user-friendly way to view test results
-          - The reports include information about passed, failed, and skipped tests
-          - Coverage reports show which parts of the code are covered by tests and which are not
+          - Coverage reports are interactive - you can click on files to see detailed line-by-line coverage
+          - Green lines in coverage reports indicate code that was executed during tests
+          - Red lines indicate code that was not executed during tests
+
+          ## Troubleshooting
+          If you have trouble opening the HTML files:
+          1. Make sure you've fully extracted the zip file
+          2. Try using a different browser
+          3. Check if you have permission to access the files
           EOF
 
       # Archive test results (API)
       - name: Archive API test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@latest
         if: always()
         with:
           name: api-test-results
@@ -85,18 +93,21 @@ jobs:
 
       # Archive test results (Web UI)
       - name: Archive Web UI test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@latest
         if: always()
         with:
           name: web-ui-test-results
           path: |
             web-ui/coverage/
+            web-ui/html-report/
             reports/README.md
 
       # Archive build artifacts
       - name: Archive Web UI build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@latest
         if: always()
         with:
+          name: web-ui-build
+          path: web-ui/build/
           name: web-ui-build
           path: web-ui/build/
