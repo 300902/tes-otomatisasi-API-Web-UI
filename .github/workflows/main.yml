@@ -82,7 +82,7 @@ jobs:
 
       # Archive test results (API)
       - name: Archive API test results
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: api-test-results
@@ -93,7 +93,7 @@ jobs:
 
       # Archive test results (Web UI)
       - name: Archive Web UI test results
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: web-ui-test-results
@@ -104,10 +104,8 @@ jobs:
 
       # Archive build artifacts
       - name: Archive Web UI build
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: web-ui-build
-          path: web-ui/build/
           name: web-ui-build
           path: web-ui/build/
