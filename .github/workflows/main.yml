@@ -38,18 +38,39 @@ jobs:
 
       - name: Run Web UI Tests
         working-directory: ./web-ui
-        run: npm run test:ci
+        run: npm test -- --coverage --watchAll=false
 
       - name: Build Web UI
         working-directory: ./web-ui
         run: npm run build
 
-      # Copy README to reports directory
-      - name: Copy README to reports
+      # Create README for test reports
+      - name: Create README for test reports
         run: |
-          mkdir -p api/html-report
-          mkdir -p web-ui/html-report
-          cp -r reports/* .
+          mkdir -p reports
+          cat > reports/README.md << 'EOF'
+          # Test Report Instructions
+
+          This directory contains test reports for both the API and Web UI components of the project.
+
+          ## How to Open Test Reports
+
+          ### API Test Report
+          1. Navigate to the `api-test-results` directory
+          2. Locate the `html-report/test-report.html` file
+          3. Open this file with any web browser (Chrome, Firefox, Edge, etc.)
+          4. You can simply double-click the file or right-click and select "Open with" and choose your browser
+
+          ### Web UI Test Report
+          1. Navigate to the `web-ui-test-results` directory 
+          2. For coverage reports, open `coverage/lcov-report/index.html` in your browser
+          3. This will show you detailed code coverage information for the project
+
+          ## Notes
+          - These reports provide a user-friendly way to view test results
+          - The reports include information about passed, failed, and skipped tests
+          - Coverage reports show which parts of the code are covered by tests and which are not
+          EOF
 
       # Archive test results (API)
       - name: Archive API test results
@@ -60,7 +81,7 @@ jobs:
           path: |
             api/coverage/
             api/html-report/
-            README.md
+            reports/README.md
 
       # Archive test results (Web UI)
       - name: Archive Web UI test results
@@ -70,8 +91,7 @@ jobs:
           name: web-ui-test-results
           path: |
             web-ui/coverage/
-            web-ui/html-report/
-            README.md
+            reports/README.md
 
       # Archive build artifacts
       - name: Archive Web UI build

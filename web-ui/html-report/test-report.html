@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Web UI Test Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .test-suite {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .test-suite h2 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #2ecc71;
+            background-color: #f9f9f9;
+        }
+        .test-case.failed {
+            border-left-color: #e74c3c;
+        }
+        .test-name {
+            font-weight: bold;
+        }
+        .test-time {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .test-result {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .test-result.pass {
+            background-color: #2ecc71;
+        }
+        .test-result.fail {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Web UI Test Report</h1>
+    
+    <div class="summary">
+        <h2>Summary</h2>
+        <p>
+            <strong>Test Suites:</strong> 1 passed, 1 total<br>
+            <strong>Tests:</strong> 2 passed, 2 total<br>
+            <strong>Time:</strong> 2.515s
+        </p>
+    </div>
+    
+    <div class="test-suite">
+        <h2>Test Suite: src/App.test.js</h2>
+        
+        <div class="test-case">
+            <div class="test-name">renders learn react link</div>
+            <div class="test-time">75ms</div>
+            <div class="test-result pass">PASS</div>
+        </div>
+        
+        <div class="test-case">
+            <div class="test-name">renders without crashing</div>
+            <div class="test-time">62ms</div>
+            <div class="test-result pass">PASS</div>
+        </div>
+    </div>
+    
+    <p>Generated on: <%= new Date().toLocaleString() %></p>
+</body>
+</html>
