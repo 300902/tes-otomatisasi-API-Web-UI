@@ -82,30 +82,24 @@ jobs:
 
       # Archive test results (API)
       - name: Archive API test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v1
         if: always()
         with:
           name: api-test-results
-          path: |
-            api/coverage/
-            api/html-report/
-            reports/README.md
+          path: api
 
       # Archive test results (Web UI)
       - name: Archive Web UI test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v1
         if: always()
         with:
           name: web-ui-test-results
-          path: |
-            web-ui/coverage/
-            web-ui/html-report/
-            reports/README.md
+          path: web-ui
 
-      # Archive build artifacts
-      - name: Archive Web UI build
-        uses: actions/upload-artifact@v3
+      # Archive README
+      - name: Archive README
+        uses: actions/upload-artifact@v1
         if: always()
         with:
-          name: web-ui-build
-          path: web-ui/build/
+          name: instructions
+          path: reports/README.md
