@@ -9,7 +9,7 @@ jest.mock('axios', () => ({
   get: jest.fn(() => Promise.resolve({ data: {} })),
   post: jest.fn(() => Promise.resolve({ data: {} }))
 }));
-
+//test changes for commit
 describe('App Component', () => {
   beforeEach(() => {
     // Clear all mocks before each test
