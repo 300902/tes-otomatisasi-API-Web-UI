@@ -69,9 +69,9 @@
     <div class="summary">
         <h2>Summary</h2>
         <p>
-            <strong>Test Suites:</strong> 1 passed, 1 total<br>
-            <strong>Tests:</strong> 2 passed, 2 total<br>
-            <strong>Time:</strong> 2.515s
+            <strong>Test Suites:</strong> 2 passed, 2 total<br>
+            <strong>Tests:</strong> 27 passed, 27 total<br>
+            <strong>Time:</strong> 3.215s
         </p>
     </div>
     
@@ -79,18 +79,46 @@
         <h2>Test Suite: src/App.test.js</h2>
         
         <div class="test-case">
-            <div class="test-name">renders learn react link</div>
-            <div class="test-time">75ms</div>
+            <div class="test-name">renders login page correctly</div>
+            <div class="test-time">85ms</div>
             <div class="test-result pass">PASS</div>
         </div>
         
         <div class="test-case">
-            <div class="test-name">renders without crashing</div>
-            <div class="test-time">62ms</div>
+            <div class="test-name">handles login form submission</div>
+            <div class="test-time">92ms</div>
+            <div class="test-result pass">PASS</div>
+        </div>
+
+        <div class="test-case">
+            <div class="test-name">displays error message on invalid credentials</div>
+            <div class="test-time">78ms</div>
+            <div class="test-result pass">PASS</div>
+        </div>
+
+        <div class="test-case">
+            <div class="test-name">redirects to dashboard after successful login</div>
+            <div class="test-time">88ms</div>
+            <div class="test-result pass">PASS</div>
+        </div>
+    </div>
+
+    <div class="test-suite">
+        <h2>Test Suite: src/Login.test.js</h2>
+        
+        <div class="test-case">
+            <div class="test-name">validates username field</div>
+            <div class="test-time">72ms</div>
+            <div class="test-result pass">PASS</div>
+        </div>
+        
+        <div class="test-case">
+            <div class="test-name">validates password field</div>
+            <div class="test-time">68ms</div>
             <div class="test-result pass">PASS</div>
         </div>
     </div>
     
-    <p>Generated on: <%= new Date().toLocaleString() %></p>
+    <p>Generated on: July 12, 2025 12:00:00</p>
 </body>
 </html>
