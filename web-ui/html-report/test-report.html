@@ -1,124 +1,444 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Web UI Test Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        .summary {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        .test-suite {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-        }
-        .test-suite h2 {
-            margin-top: 0;
-            color: #3498db;
-        }
-        .test-case {
-            margin: 10px 0;
-            padding: 10px;
-            border-left: 4px solid #2ecc71;
-            background-color: #f9f9f9;
-        }
-        .test-case.failed {
-            border-left-color: #e74c3c;
-        }
-        .test-name {
-            font-weight: bold;
-        }
-        .test-time {
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        .test-result {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 3px;
-            color: white;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-        .test-result.pass {
-            background-color: #2ecc71;
-        }
-        .test-result.fail {
-            background-color: #e74c3c;
-        }
-    </style>
-</head>
-<body>
-    <h1>Web UI Test Report</h1>
-    
-    <div class="summary">
-        <h2>Summary</h2>
-        <p>
-            <strong>Test Suites:</strong> 2 passed, 2 total<br>
-            <strong>Tests:</strong> 27 passed, 27 total<br>
-            <strong>Time:</strong> 3.215s
-        </p>
-    </div>
-    
-    <div class="test-suite">
-        <h2>Test Suite: src/App.test.js</h2>
-        
-        <div class="test-case">
-            <div class="test-name">renders login page correctly</div>
-            <div class="test-time">85ms</div>
-            <div class="test-result pass">PASS</div>
-        </div>
-        
-        <div class="test-case">
-            <div class="test-name">handles login form submission</div>
-            <div class="test-time">92ms</div>
-            <div class="test-result pass">PASS</div>
-        </div>
+<html><head><meta charset="utf-8"/><title>Web UI Test Report</title><style type="text/css">html,
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+body {
+  padding: 2rem 1rem;
+  font-size: 0.85rem;
+}
+.jesthtml-content {
+  margin: 0 auto;
+  max-width: 70rem;
+}
+header {
+  display: flex;
+  align-items: center;
+}
+#title {
+  margin: 0;
+  flex-grow: 1;
+}
+#logo {
+  height: 4rem;
+}
+#timestamp {
+  color: #777;
+  margin-top: 0.5rem;
+}
 
-        <div class="test-case">
-            <div class="test-name">displays error message on invalid credentials</div>
-            <div class="test-time">78ms</div>
-            <div class="test-result pass">PASS</div>
-        </div>
+/** SUMMARY */
+#summary {
+  color: #333;
+  margin: 2rem 0;
+  display: flex;
+  font-family: monospace;
+  font-size: 1rem;
+}
+#summary > div {
+  margin-right: 2rem;
+  background: #eee;
+  padding: 1rem;
+  min-width: 15rem;
+}
+#summary > div:last-child {
+  margin-right: 0;
+}
+@media only screen and (max-width: 720px) {
+  #summary {
+    flex-direction: column;
+  }
+  #summary > div {
+    margin-right: 0;
+    margin-top: 2rem;
+  }
+  #summary > div:first-child {
+    margin-top: 0;
+  }
+}
 
-        <div class="test-case">
-            <div class="test-name">redirects to dashboard after successful login</div>
-            <div class="test-time">88ms</div>
-            <div class="test-result pass">PASS</div>
-        </div>
-    </div>
+.summary-total {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.summary-passed {
+  color: #4f8a10;
+  border-left: 0.4rem solid #4f8a10;
+  padding-left: 0.5rem;
+}
+.summary-failed,
+.summary-obsolete-snapshots {
+  color: #d8000c;
+  border-left: 0.4rem solid #d8000c;
+  padding-left: 0.5rem;
+}
+.summary-pending {
+  color: #9f6000;
+  border-left: 0.4rem solid #9f6000;
+  padding-left: 0.5rem;
+}
+.summary-empty {
+  color: #999;
+  border-left: 0.4rem solid #999;
+}
 
-    <div class="test-suite">
-        <h2>Test Suite: src/Login.test.js</h2>
-        
-        <div class="test-case">
-            <div class="test-name">validates username field</div>
-            <div class="test-time">72ms</div>
-            <div class="test-result pass">PASS</div>
-        </div>
-        
-        <div class="test-case">
-            <div class="test-name">validates password field</div>
-            <div class="test-time">68ms</div>
-            <div class="test-result pass">PASS</div>
-        </div>
-    </div>
-    
-    <p>Generated on: July 12, 2025 12:00:00</p>
-</body>
-</html>
+.test-result {
+  padding: 1rem;
+  margin-bottom: 0.25rem;
+}
+.test-result:last-child {
+  border: 0;
+}
+.test-result.passed {
+  background-color: #dff2bf;
+  color: #4f8a10;
+}
+.test-result.failed {
+  background-color: #ffbaba;
+  color: #d8000c;
+}
+.test-result.pending {
+  background-color: #ffdf61;
+  color: #9f6000;
+}
+
+.test-info {
+  display: flex;
+  justify-content: space-between;
+}
+.test-suitename {
+  width: 20%;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-word;
+}
+.test-title {
+  width: 40%;
+  text-align: left;
+  font-style: italic;
+}
+.test-status {
+  width: 20%;
+  text-align: right;
+}
+.test-duration {
+  width: 10%;
+  text-align: right;
+  font-size: 0.75rem;
+}
+
+.failureMessages {
+  padding: 0 1rem;
+  margin-top: 1rem;
+  border-top: 1px dashed #d8000c;
+}
+.failureMessages.suiteFailure {
+  border-top: none;
+}
+.failureMsg {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.suite-container {
+  margin-bottom: 2rem;
+}
+.suite-container > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+.suite-container label {
+  display: block;
+}
+.suite-container .suite-tests {
+  overflow-y: hidden;
+  height: 0;
+}
+.suite-container > input[type="checkbox"]:checked ~ .suite-tests {
+  height: auto;
+  overflow: visible;
+}
+.suite-info {
+  padding: 1rem;
+  background-color: #eee;
+  color: #777;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.suite-info:hover {
+  background-color: #ddd;
+  cursor: pointer;
+}
+.suite-info .suite-path {
+  word-break: break-all;
+  flex-grow: 1;
+  font-family: monospace;
+  font-size: 1rem;
+}
+.suite-info .suite-time {
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.75rem;
+}
+.suite-info .suite-time.warn {
+  background-color: #d8000c;
+  color: #fff;
+}
+.suite-info:before {
+  content: "\2303";
+  display: inline-block;
+  margin-right: 0.5rem;
+  transform: rotate(0deg);
+}
+.suite-container > input[type="checkbox"]:checked ~ label .suite-info:before {
+  transform: rotate(180deg);
+}
+
+/* CONSOLE LOGS */
+.suite-consolelog {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: #efefef;
+}
+.suite-consolelog-header {
+  font-weight: bold;
+}
+.suite-consolelog-item {
+  padding: 0.5rem;
+}
+.suite-consolelog-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-consolelog-item-origin {
+  color: #777;
+  font-weight: bold;
+}
+.suite-consolelog-item-message {
+  color: #000;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+/* OBSOLETE SNAPSHOTS */
+.suite-obsolete-snapshots {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: #ffbaba;
+  color: #d8000c;
+}
+.suite-obsolete-snapshots-header {
+  font-weight: bold;
+}
+.suite-obsolete-snapshots-item {
+  padding: 0.5rem;
+}
+.suite-obsolete-snapshots-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-obsolete-snapshots-item-message {
+  color: #000;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+</style></head><body><div class="jesthtml-content"><header><h1 id="title">Web UI Test Report</h1></header><div id="metadata-container"><div id="timestamp">Started: 2025-07-12 12:46:17</div><div id="summary"><div id="suite-summary"><div class="summary-total">Suites (2)</div><div class="summary-passed  summary-empty">0 passed</div><div class="summary-failed ">2 failed</div><div class="summary-pending  summary-empty">0 pending</div></div><div id="test-summary"><div class="summary-total">Tests (0)</div><div class="summary-passed  summary-empty">0 passed</div><div class="summary-failed  summary-empty">0 failed</div><div class="summary-pending  summary-empty">0 pending</div></div></div></div><div id="suite-1" class="suite-container"><input id="collapsible-0" type="checkbox" class="toggle" checked="checked"/><label for="collapsible-0"><div class="suite-info"><div class="suite-path">/home/acer/tes-otomatisasi-API-Web-UI/web-ui/src/Login.test.js</div><div class="suite-time">0s</div></div></label><div class="suite-tests"><div class="test-result failed"><div class="failureMessages suiteFailure"> <pre class="failureMsg">  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    SyntaxError: /home/acer/tes-otomatisasi-API-Web-UI/web-ui/src/Login.test.js: Support for the experimental syntax 'jsx' isn't currently enabled (20:14):
+
+      18 |     test('username field is required', async () =&gt; {
+      19 |       const user = userEvent.setup();
+    &gt; 20 |       render(&lt;App /&gt;);
+         |              ^
+      21 |
+      22 |       const usernameInput = screen.getByTestId('username-input');
+      23 |       const submitButton = screen.getByTestId('login-button');
+
+    Add @babel/preset-react (https://github.com/babel/babel/tree/main/packages/babel-preset-react) to the 'presets' section of your Babel config to enable transformation.
+    If you want to leave it as-is, add @babel/plugin-syntax-jsx (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-jsx) to the 'plugins' section to enable parsing.
+
+    If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+    You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+    	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/acer/tes-otomatisasi-API-Web-UI/web-ui/src/Login.test.js &lt;your build command&gt;
+    See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+      at toParseError (node_modules/@babel/parser/src/parse-error.ts:95:45)
+      at Parser.raise (node_modules/@babel/parser/src/tokenizer/index.ts:1503:19)
+      at Parser.expectOnePlugin (node_modules/@babel/parser/src/tokenizer/index.ts:1568:18)
+      at Parser.parseExprAtom (node_modules/@babel/parser/src/parser/expression.ts:1264:16)
+      at Parser.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:734:23)
+      at Parser.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:713:21)
+      at Parser.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:675:23)
+      at Parser.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:409:14)
+      at Parser.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:421:23)
+      at Parser.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:376:23)
+      at Parser.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:301:21)
+      at callback (node_modules/@babel/parser/src/parser/expression.ts:257:12)
+      at Parser.allowInAnd (node_modules/@babel/parser/src/parser/expression.ts:3192:12)
+      at Parser.parseMaybeAssignAllowIn (node_modules/@babel/parser/src/parser/expression.ts:256:17)
+      at Parser.parseMaybeAssignAllowInOrVoidPattern (node_modules/@babel/parser/src/parser/expression.ts:3306:17)
+      at Parser.parseExprListItem (node_modules/@babel/parser/src/parser/expression.ts:2788:18)
+      at Parser.parseCallExpressionArguments (node_modules/@babel/parser/src/parser/expression.ts:1034:14)
+      at Parser.parseCoverCallAndAsyncArrowHead (node_modules/@babel/parser/src/parser/expression.ts:914:29)
+      at Parser.parseSubscript (node_modules/@babel/parser/src/parser/expression.ts:796:19)
+      at Parser.parseSubscripts (node_modules/@babel/parser/src/parser/expression.ts:755:19)
+      at Parser.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:740:17)
+      at Parser.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:713:21)
+      at Parser.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:675:23)
+      at Parser.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:409:14)
+      at Parser.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:421:23)
+      at Parser.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:376:23)
+      at Parser.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:301:21)
+      at Parser.parseExpressionBase (node_modules/@babel/parser/src/parser/expression.ts:226:23)
+      at callback (node_modules/@babel/parser/src/parser/expression.ts:217:39)
+      at Parser.allowInAnd (node_modules/@babel/parser/src/parser/expression.ts:3187:16)
+      at Parser.parseExpression (node_modules/@babel/parser/src/parser/expression.ts:217:17)
+      at Parser.parseStatementContent (node_modules/@babel/parser/src/parser/statement.ts:683:23)
+      at Parser.parseStatementLike (node_modules/@babel/parser/src/parser/statement.ts:477:17)
+      at Parser.parseStatementListItem (node_modules/@babel/parser/src/parser/statement.ts:426:17)
+      at Parser.parseBlockOrModuleBlockBody (node_modules/@babel/parser/src/parser/statement.ts:1439:16)
+      at Parser.parseBlockBody (node_modules/@babel/parser/src/parser/statement.ts:1412:10)
+      at Parser.parseBlock (node_modules/@babel/parser/src/parser/statement.ts:1380:10)
+      at Parser.parseFunctionBody (node_modules/@babel/parser/src/parser/expression.ts:2616:24)
+      at Parser.parseArrowExpression (node_modules/@babel/parser/src/parser/expression.ts:2553:10)
+      at Parser.parseAsyncArrowFromCallExpression (node_modules/@babel/parser/src/parser/expression.ts:1059:10)
+      at Parser.parseCoverCallAndAsyncArrowHead (node_modules/@babel/parser/src/parser/expression.ts:934:27)
+      at Parser.parseSubscript (node_modules/@babel/parser/src/parser/expression.ts:796:19)
+      at Parser.parseSubscripts (node_modules/@babel/parser/src/parser/expression.ts:755:19)
+      at Parser.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:740:17)
+      at Parser.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:713:21)
+      at Parser.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:675:23)
+      at Parser.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:409:14)
+      at Parser.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:421:23)
+      at Parser.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:376:23)
+      at Parser.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:301:21)
+</pre></div></div></div></div><div id="suite-2" class="suite-container"><input id="collapsible-1" type="checkbox" class="toggle" checked="checked"/><label for="collapsible-1"><div class="suite-info"><div class="suite-path">/home/acer/tes-otomatisasi-API-Web-UI/web-ui/src/App.test.js</div><div class="suite-time">0s</div></div></label><div class="suite-tests"><div class="test-result failed"><div class="failureMessages suiteFailure"> <pre class="failureMsg">  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    SyntaxError: /home/acer/tes-otomatisasi-API-Web-UI/web-ui/src/App.test.js: Support for the experimental syntax 'jsx' isn't currently enabled (22:16):
+
+      20 |     test('renders main heading', async () =&gt; {
+      21 |       await act(async () =&gt; {
+    &gt; 22 |         render(&lt;App /&gt;);
+         |                ^
+      23 |       });
+      24 |       const heading = screen.getByText('Automation Web UI');
+      25 |       expect(heading).toBeInTheDocument();
+
+    Add @babel/preset-react (https://github.com/babel/babel/tree/main/packages/babel-preset-react) to the 'presets' section of your Babel config to enable transformation.
+    If you want to leave it as-is, add @babel/plugin-syntax-jsx (https://github.com/babel/babel/tree/main/packages/babel-plugin-syntax-jsx) to the 'plugins' section to enable parsing.
+
+    If you already added the plugin for this syntax to your config, it's possible that your config isn't being loaded.
+    You can re-run Babel with the BABEL_SHOW_CONFIG_FOR environment variable to show the loaded configuration:
+    	npx cross-env BABEL_SHOW_CONFIG_FOR=/home/acer/tes-otomatisasi-API-Web-UI/web-ui/src/App.test.js &lt;your build command&gt;
+    See https://babeljs.io/docs/configuration#print-effective-configs for more info.
+
+      at toParseError (node_modules/@babel/parser/src/parse-error.ts:95:45)
+      at Parser.raise (node_modules/@babel/parser/src/tokenizer/index.ts:1503:19)
+      at Parser.expectOnePlugin (node_modules/@babel/parser/src/tokenizer/index.ts:1568:18)
+      at Parser.parseExprAtom (node_modules/@babel/parser/src/parser/expression.ts:1264:16)
+      at Parser.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:734:23)
+      at Parser.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:713:21)
+      at Parser.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:675:23)
+      at Parser.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:409:14)
+      at Parser.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:421:23)
+      at Parser.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:376:23)
+      at Parser.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:301:21)
+      at callback (node_modules/@babel/parser/src/parser/expression.ts:257:12)
+      at Parser.allowInAnd (node_modules/@babel/parser/src/parser/expression.ts:3192:12)
+      at Parser.parseMaybeAssignAllowIn (node_modules/@babel/parser/src/parser/expression.ts:256:17)
+      at Parser.parseMaybeAssignAllowInOrVoidPattern (node_modules/@babel/parser/src/parser/expression.ts:3306:17)
+      at Parser.parseExprListItem (node_modules/@babel/parser/src/parser/expression.ts:2788:18)
+      at Parser.parseCallExpressionArguments (node_modules/@babel/parser/src/parser/expression.ts:1034:14)
+      at Parser.parseCoverCallAndAsyncArrowHead (node_modules/@babel/parser/src/parser/expression.ts:914:29)
+      at Parser.parseSubscript (node_modules/@babel/parser/src/parser/expression.ts:796:19)
+      at Parser.parseSubscripts (node_modules/@babel/parser/src/parser/expression.ts:755:19)
+      at Parser.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:740:17)
+      at Parser.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:713:21)
+      at Parser.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:675:23)
+      at Parser.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:409:14)
+      at Parser.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:421:23)
+      at Parser.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:376:23)
+      at Parser.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:301:21)
+      at Parser.parseExpressionBase (node_modules/@babel/parser/src/parser/expression.ts:226:23)
+      at callback (node_modules/@babel/parser/src/parser/expression.ts:217:39)
+      at Parser.allowInAnd (node_modules/@babel/parser/src/parser/expression.ts:3187:16)
+      at Parser.parseExpression (node_modules/@babel/parser/src/parser/expression.ts:217:17)
+      at Parser.parseStatementContent (node_modules/@babel/parser/src/parser/statement.ts:683:23)
+      at Parser.parseStatementLike (node_modules/@babel/parser/src/parser/statement.ts:477:17)
+      at Parser.parseStatementListItem (node_modules/@babel/parser/src/parser/statement.ts:426:17)
+      at Parser.parseBlockOrModuleBlockBody (node_modules/@babel/parser/src/parser/statement.ts:1439:16)
+      at Parser.parseBlockBody (node_modules/@babel/parser/src/parser/statement.ts:1412:10)
+      at Parser.parseBlock (node_modules/@babel/parser/src/parser/statement.ts:1380:10)
+      at Parser.parseFunctionBody (node_modules/@babel/parser/src/parser/expression.ts:2616:24)
+      at Parser.parseArrowExpression (node_modules/@babel/parser/src/parser/expression.ts:2553:10)
+      at Parser.parseAsyncArrowFromCallExpression (node_modules/@babel/parser/src/parser/expression.ts:1059:10)
+      at Parser.parseCoverCallAndAsyncArrowHead (node_modules/@babel/parser/src/parser/expression.ts:934:27)
+      at Parser.parseSubscript (node_modules/@babel/parser/src/parser/expression.ts:796:19)
+      at Parser.parseSubscripts (node_modules/@babel/parser/src/parser/expression.ts:755:19)
+      at Parser.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:740:17)
+      at Parser.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:713:21)
+      at Parser.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:675:23)
+      at Parser.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:409:14)
+      at Parser.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:421:23)
+      at Parser.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:376:23)
+      at Parser.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:301:21)
+</pre></div></div></div></div></div></body></html>
