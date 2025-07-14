@@ -113,3 +113,11 @@ jobs:
         with:
           name: web-ui-build
           path: web-ui/build
+
+      # Archive combined test report
+      - name: Archive Combined Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: combined-test-report
+          path: reports/combined/
